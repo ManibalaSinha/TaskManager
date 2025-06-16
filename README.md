@@ -7,25 +7,14 @@ A React-based web application that fetches and displays user data from the GitHu
 (https://vercel.com/manibala-sinhas-projects-273c5a77/react-api)
 ---
 
-## 🧠 Features
-
-- 🔍 Search and view GitHub users
-- 📄 View user details including followers, following, and public repos
-- ⚡ Fast, responsive UI built with React
-- 🌐 Real-time data from the GitHub REST API
-
----
-
 ## 🛠️ Tech Stack
 
-- **Frontend**: React, JSX, CSS
-- **API**: GitHub REST API
+- **Frontend**: React, JSX, CSS, Tailwind
+- **API**: GitHub REST API, LocalStorage
 - **Deployment**: Vercel
 
 ---
-
 ## 📂 Project Structure
-
 
 src/
  ├── components/ # Reusable components
@@ -34,6 +23,23 @@ src/
  ├── styles/ # CSS files
 
 ---
+# Appointments Dashboard
+
+A React-based frontend app to manage simple appointments.
+
+## Features
+
+- Add, view, delete appointments
+- Search by name
+- Sort by date (asc/desc)
+- Data persists via localStorage
+
+## Setup
+
+```bash
+npm install
+npm run dev
+
 
 ## 📦 Installation
 
