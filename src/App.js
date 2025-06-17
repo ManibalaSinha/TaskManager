@@ -25,14 +25,15 @@ export default function App() {
 
   const filtered = appointments
     .filter((a) =>
-      [a.name, a.owner, a.notes].some((field) =>
-        field.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      [a.petName, a.ownerName]
+        .join(" ")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
     )
     .sort((a, b) =>
       sortAsc
-        ? new Date(a.date) - new Date(b.date)
-        : new Date(b.date) - new Date(a.date)
+        ? new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
+        : new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
     );
 
   return (
