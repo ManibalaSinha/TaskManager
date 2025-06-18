@@ -1,0 +1,32 @@
+{
+  "appointments": [
+    {
+      "id": "1",
+      "name": "Manibala Sinha",
+      "date": "2025-06-20",
+      "time": "10:00",
+      "notes": "Follow-up appointment"
+    },
+    {
+      "id": "2",
+      "name": "Ravi Kumar",
+      "date": "2025-06-22",
+      "time": "15:30",
+      "notes": "Initial consultation"
+    },
+    {
+      "id": "fff1",
+      "name": "sd",
+      "date": "2025-06-18",
+      "time": "11:47",
+      "notes": "fi"
+    },
+    {
+      "id": "bb65",
+      "name": "ClownDrawing",
+      "date": "2025-06-18",
+      "time": "11:54",
+      "notes": "gi"
+    }
+  ]
+}

@@ -1,14 +1,25 @@
-import AppointmentItem from "./AppointmentItem";
+import { useEffect, useState } from "react";
 
-export default function AppointmentList({ appointments, onDelete }) {
-  if (appointments.length === 0)
-    return <p className="text-gray-500 mt-4">No appointments found.</p>;
+export default function AppointmentList() {
+  const [appointments, setAppointments] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/appointments")
+      .then((res) => res.json())
+      .then((data) => setAppointments(data))
+      .catch((err) => console.error("Error:", err));
+  }, []);
 
   return (
-    <ul className="space-y-2">
-      {appointments.map((apt) => (
-        <AppointmentItem key={apt.id} apt={apt} onDelete={onDelete} />
-      ))}
-    </ul>
+    <div>
+      <h2 className="text-lg font-bold">Appointments</h2>
+      <ul>
+        {appointments.map((apt) => (
+          <li key={apt.id}>
+            {apt.name} - {apt.date} @ {apt.time}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
