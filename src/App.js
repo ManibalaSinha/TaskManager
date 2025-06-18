@@ -1,48 +1,48 @@
 import { useState, useEffect } from "react";
-import AddAppointmentForm from "./components/AddAppointmentForm";
-import AppointmentList from "./components/AppointmentList";
-import SearchBar from "./components/SearchBar";
-import SortToggle from "./components/SortToggle";
+import TaskForm from "./components/TaskForm";
+import TaskList from "./components/TaskList";
+import FilterBar from "./components/FilterBar";
 
 export default function App() {
-  const [appointments, setAppointments] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortAsc, setSortAsc] = useState(true);
+  const [tasks, setTasks] = useState([]);
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
-    const stored = localStorage.getItem("appointments");
-    if (stored) setAppointments(JSON.parse(stored));
+    const stored = localStorage.getItem("tasks");
+    if (stored) setTasks(JSON.parse(stored));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("appointments", JSON.stringify(appointments));
-  }, [appointments]);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
-  const handleAdd = (apt) => setAppointments([...appointments, apt]);
+  const handleAdd = (task) => setTasks([...tasks, task]);
 
-  const handleDelete = (id) =>
-    setAppointments(appointments.filter((a) => a.id !== id));
-
-  const filtered = appointments
-    .filter((a) =>
-      [a.petName, a.ownerName]
-        .join(" ")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) =>
-      sortAsc
-        ? new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
-        : new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
+  const handleToggle = (id) =>
+    setTasks(
+      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
 
+  const handleDelete = (id) => setTasks(tasks.filter((t) => t.id !== id));
+
+  const filteredTasks = tasks.filter((task) =>
+    filter === "completed"
+      ? task.completed
+      : filter === "incomplete"
+        ? !task.completed
+        : true
+  );
+
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">Appointments Dashboard</h1>
-      <AddAppointmentForm onAdd={handleAdd} />
-      <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <SortToggle sortAsc={sortAsc} setSortAsc={setSortAsc} />
-      <AppointmentList appointments={filtered} onDelete={handleDelete} />
+    <div className="max-w-2xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">📝 Task Manager</h1>
+      <TaskForm onAdd={handleAdd} />
+      <FilterBar filter={filter} setFilter={setFilter} />
+      <TaskList
+        tasks={filteredTasks}
+        onToggle={handleToggle}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }
