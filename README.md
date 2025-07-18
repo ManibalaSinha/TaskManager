@@ -65,7 +65,7 @@ Open http://localhost:3000 to view it in the browser.
 
 
 
-✅ TODO / Future Improvements
+TODO
 🔐 Add user authentication (OAuth with GitHub)
 
 
