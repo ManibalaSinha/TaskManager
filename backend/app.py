@@ -65,7 +65,8 @@ def create_checkout_session():
         return jsonify({"id": session.id})
     except Exception as e:
         return jsonify(error=str(e)), 400
-
+    
+# Webhook to verify payments and handle failure
 @app.route("/webhook", methods=["POST"])
 def stripe_webhook():
     payload = request.data
@@ -76,12 +77,18 @@ def stripe_webhook():
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
     except stripe.error.SignatureVerificationError:
         return "Invalid signature", 400
-
+    
+  # Handle successful payment
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-        print("✅ Payment successful:", session)
-
-    return "OK", 200
+        print(" Payment successful:", session)
+        return "OK", 200
+        # notify user or log in DB
+ # Handle failed payment
+    elif event["type"] == "payment_intent.payment_failed":
+        intent = event["data"]["object"]
+        print(" Payment failed:", intent)
+        # Optionally notify user or log in DB
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
