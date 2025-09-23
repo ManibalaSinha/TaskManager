@@ -7,23 +7,39 @@ export default function App() {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("all");
 
+  // Fetch tasks from Flask backend when app loads
   useEffect(() => {
-    const stored = localStorage.getItem("tasks");
-    if (stored) setTasks(JSON.parse(stored));
+    fetch("http://127.0.0.1:5000/tasks")
+      .then((res) => res.json())
+      .then((data) => setTasks(data))
+      .catch((err) => console.error("Error fetching tasks:", err));
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
+  // Add new task
+  const handleAdd = (task) => {
+    fetch("http://127.0.0.1:5000/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(task),
+    })
+      .then((res) => res.json())
+      .then((newTask) => setTasks([...tasks, newTask]));
+  };
 
-  const handleAdd = (task) => setTasks([...tasks, task]);
+  // Toggle task
+  const handleToggle = (id) => {
+    fetch(`http://127.0.0.1:5000/tasks/${id}`, { method: "PUT" })
+      .then((res) => res.json())
+      .then((updated) =>
+        setTasks(tasks.map((t) => (t.id === id ? updated : t)))
+      );
+  };
 
-  const handleToggle = (id) =>
-    setTasks(
-      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
-
-  const handleDelete = (id) => setTasks(tasks.filter((t) => t.id !== id));
+// Delete task
+  const handleDelete = (id) => {
+    fetch(`http://127.0.0.1:5000/tasks/${id}`, { method: "DELETE" })
+      .then(() => setTasks(tasks.filter((t) => t.id !== id)));
+  };
 
   const filteredTasks = tasks.filter((task) =>
     filter === "completed"
@@ -33,9 +49,16 @@ export default function App() {
         : true
   );
 
+  fetch("http://127.0.0.1:8000/create-checkout-session", { method: "POST" })
+  .then((res) => res.json())
+  .then((data) => {
+    const stripe = window.Stripe("pk_test_*************");
+    stripe.redirectToCheckout({ sessionId: data.id });
+  });
+
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">📝 Task Manager</h1>
+      <h1 className="text-2xl font-bold mb-4"> Task Manager</h1>
       <TaskForm onAdd={handleAdd} />
       <FilterBar filter={filter} setFilter={setFilter} />
       <TaskList
