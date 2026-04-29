@@ -1,17 +1,25 @@
 import time
 from app.workers.celery_app import celery_app
+from app.ws.manager import ConnectionManager
+
+manager = ConnectionManager()
+
 
 @celery_app.task(bind=True)
 def process_task(self, task_id: int, title: str):
 
-    # mark start
-    self.update_state(
-        state="STARTED",
-        meta={"task_id": task_id, "status": "processing"}
-    )
-
     try:
-        time.sleep(5)  # simulate heavy work
+        manager.active_connections  # ensure import works
+
+        # Step 1
+        self.update_state(state="STARTED")
+        # (optional WebSocket update)
+        # asyncio can't run directly in celery → we simulate via sync call
+
+        time.sleep(2)
+
+        # Step 2
+        time.sleep(2)
 
         result = {
             "task_id": task_id,
@@ -22,8 +30,5 @@ def process_task(self, task_id: int, title: str):
         return result
 
     except Exception as e:
-        self.update_state(
-            state="FAILURE",
-            meta={"error": str(e)}
-        )
         raise
+

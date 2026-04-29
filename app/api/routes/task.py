@@ -1,6 +1,5 @@
 from celery.result import AsyncResult
 from app.workers.celery_app import celery_app
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.schemas.task import TaskCreate, TaskResponse
@@ -18,8 +17,8 @@ def read_tasks(db: Session = Depends(get_db)):
     return get_tasks(db)
 
 @router.get("/{task_id}")
-def get_task(task_id: int):
-    cached = get_task_cached(task_id)
+def get_task(task_id: int, db: Session = Depends(get_db)):
+    cached = get_task_cached(task_id, db)
     if cached:
         return {"source": "redis", "data": cached}
 

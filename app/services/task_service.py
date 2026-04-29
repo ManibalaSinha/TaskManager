@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.task import Task
+from app.services.cache import set_cache
+from app.services.cache_service import get_cache
 from app.workers.tasks import process_task
 from app.core.redis_client import redis_client
 import json
@@ -28,11 +30,19 @@ def create_task(db: Session, task):
     return db_task
 
 
-def get_task_cached(task_id: int):
-    cached = redis_client.get(f"task:{task_id}")
+def get_task_cached(task_id: int, db):
+    key = f"task:{task_id}"
+
+    cached = get_cache(key)
     if cached:
-        return json.loads(cached)
-    return None
+        return cached
+
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if task:
+        set_cache(key, {"id": task.id, "title": task.title})
+
+    return task
 
 def get_tasks(db: Session):
     return db.query(Task).all()
