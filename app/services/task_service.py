@@ -4,7 +4,6 @@ from app.workers.tasks import process_task
 from app.core.redis_client import redis_client
 import json
 
-
 def create_task(db: Session, task):
 
     db_task = Task(title=task.title, description=task.description)
@@ -12,10 +11,10 @@ def create_task(db: Session, task):
     db.commit()
     db.refresh(db_task)
 
-    # 🚀 Send to Celery worker (async processing)
+    #  Send to Celery worker (async processing)
     process_task.delay(db_task.id, db_task.title)
 
-    # 🚀 Cache result in Redis
+    #  Cache result in Redis
     redis_client.set(
         f"task:{db_task.id}",
         json.dumps({

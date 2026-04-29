@@ -1,3 +1,6 @@
+from celery.result import AsyncResult
+from app.workers.celery_app import celery_app
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.schemas.task import TaskCreate, TaskResponse
@@ -21,3 +24,17 @@ def get_task(task_id: int):
         return {"source": "redis", "data": cached}
 
     return {"source": "db", "message": "Not cached yet"}
+
+@router.get("/status/{celery_task_id}")
+def get_task_status(celery_task_id: str):
+
+    result = AsyncResult(celery_task_id, app=celery_app)
+
+    response = {
+        "task_id": celery_task_id,
+        "status": result.status,
+        "result": result.result if result.successful() else None
+    }
+
+   # return response
+
